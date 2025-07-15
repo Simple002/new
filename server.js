@@ -19,9 +19,12 @@ mongoose.connect(process.env.DATABASE)
 
 const userSchema = mongoose.Schema({
     name:String,
-    password:String
+    password:String,
+    num:Number
 })
 const User = mongoose.model("User",userSchema)
+
+
 
 app.get('/check',(req,res)=>{
     const cookie = req.cookies.token
@@ -53,12 +56,12 @@ app.post('/post',async (req,res)=>{
     const hash = await bcrypt.hash(password,10)
     const token = jwt.sign({name:username},process.env.SECRET_KEY,{expiresIn:"7d"})
 
-    const user = new User({name:username,password:hash})
+    const user = new User({name:username,password:hash,num: 0})
     await user.save();
 
     res.cookie("token",token,{
         httpOnly:true,
-        maxAge:360000
+        maxAge:3600000
     })
     res.redirect('/home')
 })
@@ -67,11 +70,56 @@ app.get('/home',(req,res)=>{
     res.render("main")
 })
 
+function Auth(req,res,next){
+    const token_check = req.cookies.token;
+    if(!token_check){
+        return res.status(401).send("Token not found")
+    }
+    try{
+        const decoded = jwt.verify(token_check,process.env.SECRET_KEY)
+        req.user = decoded
+        next()
+    }catch{
+        res.redirect("/");
+    }
+}
+
+app.get("/profile", Auth, async (req, res) => {
+    try {
+        const user = await User.findOne({ name: req.user.name });
+        if (!user) return res.redirect("/");
+
+        res.render("profile", { username: user.name });
+    } catch {
+        res.redirect("/");
+    }
+});
+
 app.get('/logout',(req,res)=>{
     res.clearCookie("token")
     res.json({out:false})
 })
 
-app.listen(3000,()=>{
+
+app.get('/plus', Auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ name: req.user.name });
+
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+
+    user.num = (user.num || 0) + 1; // если num нет, то начнём с 0
+    await user.save();              // сохраняем обновление в MongoDB
+
+    res.json({ status: true, count: user.num });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: false, message: "Server error" });
+  }
+});
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT,()=>{
     console.log("Server start work on http://localhost:3000/")
 })

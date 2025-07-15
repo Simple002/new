@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Профиль</title>
+</head>
+<body>
+  <h1>Привет, <%= username %>!</h1>
+  <p id="text"></p>
+  <button id="btn">Click</button>
+  <a href="/logout">Выйти</a>
+  <script>
+    document.getElementById("btn").addEventListener("click",()=>{
+        fetch("/plus",{
+            method:"GET"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status){
+                document.getElementById("text").innerHTML = data.count
+            }
+        })
+    })
+
+  </script>
+</body>
+</html>

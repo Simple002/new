@@ -6,20 +6,8 @@
     <title>Home</title>
 </head>
 <body>
-    <button id="logout">Log Out</button>
+    <a href="/profile">Profile</a>
     <script>
-        document.getElementById("logout").addEventListener("click",()=>{
-            fetch('/logout',{
-                method:"GET",
-                credentials:"include"
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(!data.out){
-                    window.location.href = "/"
-                }
-            })
-        })
         fetch('/check',{
             method:"GET",
             credentials:"include"
