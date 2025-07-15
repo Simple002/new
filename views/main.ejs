@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <button id="logout">Log Out</button>
+    <script>
+        document.getElementById("logout").addEventListener("click",()=>{
+            fetch('/logout',{
+                method:"GET",
+                credentials:"include"
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(!data.out){
+                    window.location.href = "/"
+                }
+            })
+        })
+        fetch('/check',{
+            method:"GET",
+            credentials:"include"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(!data.status){
+                window.location.href = "/"
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h1>Create Account</h1>
+    <form action="/post" method="POST">
+      <input type="text" name="username" placeholder="Enter your username" required />
+      <input type="password" name="password" placeholder="Enter your password" required />
+      <button type="submit">Create</button>
+    </form>
+
+    <script>
+        fetch('/check',{
+            method:"GET",
+            credentials:"include"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status){
+                window.location.href = '/home'
+            }
+        })
+    </script>
+
+  </div>
+</body>
+</html>
